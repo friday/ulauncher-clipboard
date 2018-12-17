@@ -1,0 +1,31 @@
+{
+  "manifest_version": "2",
+  "api_version": "1",
+  "name": "Clipboard",
+  "description": "Ulauncher clipboard management with GPaste",
+  "developer_name": "Albin Larsson",
+  "icon": "edit-paste.png",
+  "preferences": [
+    {
+      "id": "max_results",
+      "type": "input",
+      "name": "Max results",
+      "description": "Maximum number of results to show",
+      "default_value": "6"
+    },
+    {
+      "id": "context_length",
+      "type": "input",
+      "name": "Context size",
+      "description": "Maximum context to show around the result (in characters)",
+      "default_value": "60"
+    },
+    {
+      "id": "copy",
+      "type": "keyword",
+      "name": "Copy",
+      "description": "Copy from clipboard history",
+      "default_value": "c"
+    }
+  ]
+}
