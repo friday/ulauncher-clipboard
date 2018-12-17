@@ -31,8 +31,8 @@ def showStatus(status):
 def entryAsResult(query, contextLength, action, entry):
     formatted = entry.strip()
     multiline = '\n' in formatted
-    entryData = formatted.split('\n', 1)
-    title = entryData[0]
+    title = formatted.split('\n', 1)[0]
+
     if multiline:
         pos = formatted.find(query)
         start = max(pos - contextLength, 0)
@@ -57,7 +57,7 @@ class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         max_results = tryint(extension.preferences['max_results'], 6)
         contextLength = tryint(extension.preferences['context_length'], 60)
-        query = (event.get_argument() or '').lower()
+        query = (event.get_argument() or '').encode('utf-8').lower()
         history = []
 
         try:
@@ -65,7 +65,7 @@ class KeywordQueryEventListener(EventListener):
             for child in parseXML(xmlPath).getroot():
                 # Ignore non-text entries
                 if child.attrib['kind'] == 'Text':
-                    history.append(child.getchildren()[0].text)
+                    history.append(child.getchildren()[0].text.encode('utf-8'))
 
         except Exception as e:
             logger.error('Failed getting clipboard history')
