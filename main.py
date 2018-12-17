@@ -53,12 +53,6 @@ def entryAsResult(query, contextLength, action, entry):
         highlightable = False
     )
 
-class Clipboard(Extension):
-    def __init__(self):
-        logger.info('Loading Clipboard Extension')
-        super(Clipboard, self).__init__()
-        self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
-
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         max_results = tryint(extension.preferences['max_results'], 6)
@@ -69,7 +63,9 @@ class KeywordQueryEventListener(EventListener):
         try:
             # Load data from the xml file (using the GPaste CLI would be way too slow)
             for child in parseXML(xmlPath).getroot():
-                history.append(child.getchildren()[0].text)
+                # Ignore non-text entries
+                if child.attrib['kind'] == 'Text':
+                    history.append(child.getchildren()[0].text)
 
         except Exception as e:
             logger.error('Failed getting clipboard history')
@@ -94,6 +90,12 @@ class KeywordQueryEventListener(EventListener):
             return RenderResultListAction(list(map(handler, results)))
 
         return showStatus('No matches in clipboard history' if len(query) > 0 else 'Clipboard history is empty')
+
+class Clipboard(Extension):
+    def __init__(self):
+        logger.info('Loading Clipboard Extension')
+        super(Clipboard, self).__init__()
+        self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
 
 if not distutils.spawn.find_executable('gpaste-client'):
     logger.error('gpaste-client not found. Cannot run GPaste extension')
