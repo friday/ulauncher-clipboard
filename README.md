@@ -16,4 +16,8 @@ From Ulauncher's preferences you can change the keyword, number of results that 
 
 I've created [issues](https://github.com/friday/ulauncher-clipboard/issues) for the known limitations and quirks, but don't expect to put a lot more work on this. Let me know if you have input.
 
+## License
+
+The code is licensed as MIT.
+
 The icon is part of [Paper Icons](http://snwh.org/paper/icons) by [Sam Hewitt](http://samuelhewitt.com/), and is licensed under [CC-SA-4.0](http://creativecommons.org/licenses/by-sa/4.0/)
