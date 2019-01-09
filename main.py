@@ -2,11 +2,11 @@ from functools import partial
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
 from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, findExec
+from actions import CopyAction, RenderResultListAction
 import CopyQ
 import GPaste
+
 
 providers = [CopyQ, GPaste]
 sorter = lambda p: int("{}{}{}".format(int(p.canStart()), int(p.isEnabled()), int(p.isRunning())))
@@ -63,7 +63,7 @@ class KeywordQueryEventListener(EventListener):
                     results.append(entry)
 
         # Get the handler for different keywords (only copy for now)
-        handler = partial(entryAsResult, query, contextLength, CopyToClipboardAction)
+        handler = partial(entryAsResult, query, contextLength, CopyAction)
 
         if len(results) > 0:
             return RenderResultListAction(list(map(handler, results)))

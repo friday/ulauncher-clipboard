@@ -3,8 +3,7 @@ import subprocess
 from time import sleep
 from distutils.spawn import find_executable as findExec
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
+from actions import DoNothingAction, RenderResultListAction
 
 logger = logging.getLogger('ulauncher-clipboard')
 
