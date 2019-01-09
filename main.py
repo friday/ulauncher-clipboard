@@ -19,6 +19,7 @@ def getProvider(name):
 
 
 def setProvider(name):
+    global provider
     logger.info('Loading ulauncher-clipboard provider: %s', name)
     provider = getProvider(name)
     ensureStatus(provider)
@@ -38,7 +39,6 @@ class KeywordQueryEventListener(EventListener):
         maxResults = tryInt(extension.preferences['max_results'], 6)
         contextLength = tryInt(extension.preferences['context_length'], 60)
         query = (event.get_argument() or '').lower().encode('utf-8')
-        provider = getProvider(extension.preferences['provider'])
 
         if not ensureStatus(provider):
             return showStatus('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(name))
