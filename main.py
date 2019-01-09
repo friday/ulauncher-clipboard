@@ -1,71 +1,50 @@
-import logging
-import os
-import distutils.spawn
-import subprocess
 from functools import partial
-from xml.etree.ElementTree import parse as parseXML
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.shared.event import KeywordQueryEvent
-from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
+from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
-from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
+from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, findExec
+import CopyQ
+import GPaste
 
-logger = logging.getLogger(__name__)
-xmlPath = '{}/.local/share/gpaste/history.xml'.format(os.path.expanduser('~'))
+providers = [CopyQ, GPaste]
+sorter = lambda p: int("{}{}{}".format(int(p.canStart()), int(p.isEnabled()), int(p.isRunning())))
 
-def tryint(string, fallback):
-    try:
-        return int(string, 10)
-    except Exception:
-        return fallback
+def getProvider(name):
+    if name == 'Auto':
+        return sorted(providers, key=sorter)[-1]
 
-def showStatus(status):
-    return RenderResultListAction([ExtensionResultItem(
-        name          = status,
-        on_enter      = DoNothingAction(),
-        highlightable = False
-    )])
+    return filter(lambda p: p.name == name, providers)[0]
 
-def entryAsResult(query, contextLength, action, entry):
-    formatted = entry.strip()
-    multiline = '\n' in formatted
-    title = formatted.split('\n', 1)[0]
 
-    if multiline:
-        pos = formatted.find(query)
-        start = max(pos - contextLength, 0)
-        end = min(pos + len(query) + contextLength, len(formatted))
-        # Custom highlighting would be nice here but Ulauncher converts tags in the description to entities
-        description = '{}{}{}'.format(
-            '...' if start != 0 else '',
-            formatted[start:end].strip(),
-            '...' if end != len(formatted) else ''
-        )
+def setProvider(name):
+    logger.info('Loading ulauncher-clipboard provider: %s', name)
+    provider = getProvider(name)
+    ensureStatus(provider)
 
-    return ExtensionResultItem(
-        icon          = 'edit-paste.png',
-        name          = title,
-        description   = description if multiline else '',
-        on_enter      = action(entry),
-        # Ulauncher's highlighting is too limiting (turns multi-line to single-line and doesn't work on descriptions)
-        highlightable = False
-    )
+class PreferencesLoadListener(EventListener):
+    def on_event(self, event, extension):
+        extension.preferences.update(event.preferences)
+        setProvider(event.preferences['provider'])
+
+class PreferencesChangeListener(EventListener):
+    def on_event(self, event, extension):
+        if event.id == 'provider':
+            setProvider(event.new_value)
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
-        max_results = tryint(extension.preferences['max_results'], 6)
-        contextLength = tryint(extension.preferences['context_length'], 60)
-        query = (event.get_argument() or '').encode('utf-8').lower()
-        history = []
+        maxResults = tryInt(extension.preferences['max_results'], 6)
+        contextLength = tryInt(extension.preferences['context_length'], 60)
+        query = (event.get_argument() or '').lower().encode('utf-8')
+        provider = getProvider(extension.preferences['provider'])
+
+        if not ensureStatus(provider):
+            return showStatus('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(name))
 
         try:
-            # Load data from the xml file (using the GPaste CLI would be way too slow)
-            for child in parseXML(xmlPath).getroot():
-                # Ignore non-text entries
-                if child.attrib['kind'] == 'Text':
-                    history.append(child.getchildren()[0].text.encode('utf-8'))
+            history = provider.getHistory()
 
         except Exception as e:
             logger.error('Failed getting clipboard history')
@@ -74,11 +53,11 @@ class KeywordQueryEventListener(EventListener):
 
         # Filter entries if there's a query
         if query == '':
-            results = history[:max_results]
+            results = history[:maxResults]
         else:
             results = []
             for entry in history:
-                if len(results) == max_results:
+                if len(results) == maxResults:
                     break
                 if query in entry.lower():
                     results.append(entry)
@@ -93,13 +72,10 @@ class KeywordQueryEventListener(EventListener):
 
 class Clipboard(Extension):
     def __init__(self):
-        logger.info('Loading Clipboard Extension')
         super(Clipboard, self).__init__()
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
+        self.subscribe(PreferencesEvent, PreferencesLoadListener())
+        self.subscribe(PreferencesUpdateEvent, PreferencesChangeListener())
 
-if not distutils.spawn.find_executable('gpaste-client'):
-    logger.error('gpaste-client not found. Cannot run GPaste extension')
-elif __name__ == '__main__':
-    # Start gpaste daemon if it's not already running
-    subprocess.call(["gpaste-client", "start"])
+if __name__ == '__main__':
     Clipboard().run()

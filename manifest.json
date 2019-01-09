@@ -2,10 +2,29 @@
   "manifest_version": "2",
   "api_version": "1",
   "name": "Clipboard",
-  "description": "Ulauncher clipboard management with GPaste",
+  "description": "Ulauncher clipboard management using GPaste or CopyQ",
   "developer_name": "Albin Larsson",
   "icon": "edit-paste.png",
   "preferences": [
+    {
+      "id": "provider",
+      "type": "select",
+      "name": "Clipboard Manager",
+      "description": "Auto will will pick one which is installed and not deactivated.",
+      "default_value": "Auto",
+      "options": [
+        "Auto",
+        "CopyQ",
+        "GPaste"
+      ]
+    },
+    {
+      "id": "copy",
+      "type": "keyword",
+      "name": "Copy",
+      "description": "Copy from clipboard history",
+      "default_value": "c"
+    },
     {
       "id": "max_results",
       "type": "input",
@@ -19,13 +38,6 @@
       "name": "Context size",
       "description": "Maximum context to show around the result (in characters)",
       "default_value": "60"
-    },
-    {
-      "id": "copy",
-      "type": "keyword",
-      "name": "Copy",
-      "description": "Copy from clipboard history",
-      "default_value": "c"
     }
   ]
 }

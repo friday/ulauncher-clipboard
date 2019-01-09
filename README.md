@@ -1,12 +1,12 @@
 # ulauncher-clipboard
 
-[Ulauncher](https://ulauncher.io) extension for managing your clipboard, using Gpaste
+[Ulauncher](https://ulauncher.io) extension for managing your clipboard
 
 ![](screenshot.png)
 
 ## Usage
 
-Install [GPaste](https://github.com/Keruspe/GPaste/) if you haven't.
+Install [GPaste](https://github.com/Keruspe/GPaste/) or [CopyQ](https://github.com/hluk/CopyQ) if you haven't.
 
 Open Ulauncher and type the keyword `c` followed by a space. This will search your clipboard history. Activate an entry (for example by pressing enter or clicking on it). This will copy it your actual clipboard. Now you can paste it elsewhere.
 
