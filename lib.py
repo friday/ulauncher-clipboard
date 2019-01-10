@@ -18,14 +18,13 @@ def tryOr(function, args, fallback=None):
     except Exception:
         return fallback
 
-def tryInt(string, fallback):
+def tryInt(string, fallback=0):
     return tryOr(int, [string, 10], fallback)
 
 def pidOf(name):
     # Get the first pid (there may be many space-separated pids), and parse to int
-    # Should probably be rewritten in a more "pythonic" way since lambdas can't do multiple lines/statements
-    _pidOf = lambda name: int(subprocess.check_output(['pidof', name]).split(' ', 1)[0], 10)
-    return tryOr(_pidOf, ['-x', name], False)
+    pids = tryOr(subprocess.check_output, [['pidof', '-x', name]], '').strip().split(' ')
+    return tryInt(pids[0], None)
 
 def ensureStatus(manager, attempts=0):
     running = manager.isRunning()
