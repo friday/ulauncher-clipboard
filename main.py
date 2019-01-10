@@ -11,9 +11,10 @@ from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, 
 import Clipster
 import CopyQ
 import GPaste
+import Fallback
 
 
-clipboardManagers = [CopyQ, GPaste, Clipster]
+clipboardManagers = [CopyQ, GPaste, Clipster, Fallback]
 sorter = lambda m: int("{}{}".format(int(m.isEnabled()), int(m.isRunning())))
 
 def getManager(name):
