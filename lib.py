@@ -5,7 +5,7 @@ from time import sleep
 from distutils.spawn import find_executable as findExec
 from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from actions import DoNothingAction, RenderResultListAction
+from actions import DoNothingAction, ExtensionCustomAction, RenderResultListAction
 
 logger = logging.getLogger('ulauncher-clipboard')
 
@@ -51,7 +51,7 @@ def showStatus(status):
         highlightable = False
     )])
 
-def entryAsResult(query, action, entry):
+def entryAsResult(query, entry):
     entryArr = entry.strip().split('\n')
     context = []
     pos = 0
@@ -77,5 +77,5 @@ def entryAsResult(query, action, entry):
     return ExtensionSmallResultItem(
         icon     = 'edit-paste.png',
         name     = '\n'.join(encoded),
-        on_enter = action(entry)
+        on_enter = ExtensionCustomAction(entry)
     )

@@ -1,9 +1,12 @@
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk
 from functools import partial
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent
+from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
 from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, findExec
-from actions import CopyAction, RenderResultListAction
+from actions import RenderResultListAction
 import CopyQ
 import GPaste
 
@@ -62,12 +65,19 @@ class KeywordQueryEventListener(EventListener):
                     results.append(entry)
 
         # Get the handler for different keywords (only copy for now)
-        handler = partial(entryAsResult, query, CopyAction)
+        handler = partial(entryAsResult, query)
 
         if len(results) > 0:
             return RenderResultListAction(list(map(handler, results)))
 
         return showStatus('No matches in clipboard history' if len(query) > 0 else 'Clipboard history is empty')
+
+class ItemEnterEventListener(EventListener):
+    def on_event(self, event, extension):
+        text = event.get_data()
+        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        clipboard.set_text(text, -1)
+        clipboard.store()
 
 class Clipboard(Extension):
     def __init__(self):
@@ -75,6 +85,7 @@ class Clipboard(Extension):
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
         self.subscribe(PreferencesEvent, PreferencesLoadListener())
         self.subscribe(PreferencesUpdateEvent, PreferencesChangeListener())
+        self.subscribe(ItemEnterEvent, ItemEnterEventListener())
 
 if __name__ == '__main__':
     Clipboard().run()
