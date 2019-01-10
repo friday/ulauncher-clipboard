@@ -26,11 +26,11 @@
       "default_value": "c"
     },
     {
-      "id": "max_results",
+      "id": "max_lines",
       "type": "input",
-      "name": "Max results",
-      "description": "Maximum number of results to show",
-      "default_value": "8"
+      "name": "Max lines",
+      "description": "Maximum number of lines to show",
+      "default_value": "20"
     },
     {
       "id": "copy_hook",

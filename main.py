@@ -40,7 +40,7 @@ class PreferencesChangeListener(EventListener):
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
-        maxResults = tryInt(extension.preferences['max_results'], 6)
+        maxLines = tryInt(extension.preferences['max_lines'], 20)
         query = (event.get_argument() or '').lower().encode('utf-8')
 
         if not ensureStatus(provider):
@@ -56,20 +56,26 @@ class KeywordQueryEventListener(EventListener):
 
         # Filter entries if there's a query
         if query == '':
-            results = history[:maxResults]
+            matches = history[:maxLines]
         else:
-            results = []
+            matches = []
             for entry in history:
-                if len(results) == maxResults:
+                if len(matches) == maxLines:
                     break
                 if query in entry.lower():
-                    results.append(entry)
+                    matches.append(entry)
 
-        # Get the handler for different keywords (only copy for now)
-        handler = partial(entryAsResult, query)
+        if len(matches) > 0:
+            lines = 0
+            results = []
+            for entry in matches:
+                result = entryAsResult(query, entry)
+                # Limit to max lines and compensate for the margin
+                lines += max(1, (result.get_name().count('\n') + 1) * 0.85)
+                if maxLines >= lines:
+                    results.append(result)
 
-        if len(results) > 0:
-            return RenderResultListAction(list(map(handler, results)))
+            return RenderResultListAction(results)
 
         return showStatus('No matches in clipboard history' if len(query) > 0 else 'Clipboard history is empty')
 
