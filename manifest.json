@@ -10,7 +10,7 @@
       "id": "manager",
       "type": "select",
       "name": "Clipboard Manager",
-      "description": "Auto will pick one which is installed and not deactivated.",
+      "description": "Auto will detect which one (if any) you are currently using. If you have none installed it will download and use Clipster",
       "default_value": "Auto",
       "options": [
         "Auto",

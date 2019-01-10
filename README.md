@@ -6,8 +6,6 @@
 
 ## Usage
 
-Install [GPaste](https://github.com/Keruspe/GPaste/), [Clipster](https://github.com/mrichar1/clipster) or [CopyQ](https://github.com/hluk/CopyQ) if you haven't.
-
 Open Ulauncher and type the keyword `c` followed by a space. This will search your clipboard history. Activate an entry (for example by pressing enter or clicking on it). This will copy it your actual clipboard. Now you can paste it elsewhere.
 
 From Ulauncher's preferences you can change the keyword and the clipboard manager to use, number of results to be shown.
@@ -17,6 +15,8 @@ You can also add a *copy hook*. A command to run after copying a clipboard entry
 ```sh
 xdotool key ctrl+v
 ```
+
+If you want to use [GPaste](https://github.com/Keruspe/GPaste/) or [CopyQ](https://github.com/hluk/CopyQ), you have to install them. If you haven't. [Clipster](https://github.com/mrichar1/clipster) will be downloaded automatically.
 
 ## License
 
