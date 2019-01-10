@@ -2,7 +2,7 @@
 
 [Ulauncher](https://ulauncher.io) extension for managing your clipboard
 
-![](screenshot.png)
+<img src="screenshot.png" width="500">
 
 ## Usage
 
