@@ -13,13 +13,13 @@ import GPaste
 
 
 clipboardManagers = [CopyQ, GPaste]
-sorter = lambda p: int("{}{}{}".format(int(p.canStart()), int(p.isEnabled()), int(p.isRunning())))
+sorter = lambda m: int("{}{}{}".format(int(m.canStart()), int(m.isEnabled()), int(m.isRunning())))
 
 def getManager(name):
     if name == 'Auto':
         return sorted(clipboardManagers, key=sorter)[-1]
 
-    return filter(lambda p: p.name == name, clipboardManagers)[0]
+    return filter(lambda m: m.name == name, clipboardManagers)[0]
 
 
 def setManager(name):
