@@ -31,6 +31,12 @@
       "name": "Max results",
       "description": "Maximum number of results to show",
       "default_value": "8"
+    },
+    {
+      "id": "copy_hook",
+      "type": "text",
+      "name": "Copy hook (optional)",
+      "description": "Additional command to run when selecting a clipboard entry"
     }
   ]
 }

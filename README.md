@@ -12,6 +12,12 @@ Open Ulauncher and type the keyword `c` followed by a space. This will search yo
 
 From Ulauncher's preferences you can change the keyword and the clipboard manager to use, number of results to be shown.
 
+You can also add a *copy hook*. A command to run after copying a clipboard entry. This is mostly a way to support pasting directly, without adding or supporting any such code. Pasting directly isn't possible to achieve safely, but X11 users can use xdotool to trigger the key combinations "ctrl+v" or "shift+insert". This will not work in all applications, and may even have unwanted side effects, so beware!
+
+```sh
+xdotool key ctrl+v
+```
+
 ## License
 
 The code is licensed as MIT.
