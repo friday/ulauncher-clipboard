@@ -7,7 +7,7 @@
   "icon": "edit-paste.png",
   "preferences": [
     {
-      "id": "provider",
+      "id": "manager",
       "type": "select",
       "name": "Clipboard Manager",
       "description": "Auto will will pick one which is installed and not deactivated.",

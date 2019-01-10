@@ -12,42 +12,42 @@ import CopyQ
 import GPaste
 
 
-providers = [CopyQ, GPaste]
+clipboardManagers = [CopyQ, GPaste]
 sorter = lambda p: int("{}{}{}".format(int(p.canStart()), int(p.isEnabled()), int(p.isRunning())))
 
-def getProvider(name):
+def getManager(name):
     if name == 'Auto':
-        return sorted(providers, key=sorter)[-1]
+        return sorted(clipboardManagers, key=sorter)[-1]
 
-    return filter(lambda p: p.name == name, providers)[0]
+    return filter(lambda p: p.name == name, clipboardManagers)[0]
 
 
-def setProvider(name):
-    global provider
-    logger.info('Loading ulauncher-clipboard provider: %s', name)
-    provider = getProvider(name)
-    ensureStatus(provider)
+def setManager(name):
+    global manager
+    logger.info('Loading ulauncher-clipboard manager: %s', name)
+    manager = getManager(name)
+    ensureStatus(manager)
 
 class PreferencesLoadListener(EventListener):
     def on_event(self, event, extension):
         extension.preferences.update(event.preferences)
-        setProvider(event.preferences['provider'])
+        setManager(event.preferences['manager'])
 
 class PreferencesChangeListener(EventListener):
     def on_event(self, event, extension):
-        if event.id == 'provider':
-            setProvider(event.new_value)
+        if event.id == 'manager':
+            setManager(event.new_value)
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         maxLines = tryInt(extension.preferences['max_lines'], 20)
         query = (event.get_argument() or '').lower().encode('utf-8')
 
-        if not ensureStatus(provider):
+        if not ensureStatus(manager):
             return showStatus('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(name))
 
         try:
-            history = provider.getHistory()
+            history = manager.getHistory()
 
         except Exception as e:
             logger.error('Failed getting clipboard history')

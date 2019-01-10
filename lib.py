@@ -24,23 +24,23 @@ def pidOf(name):
     _pidOf = lambda name: int(subprocess.check_output(['pidof', name]).split(' ', 1)[0], 10)
     return tryOr(_pidOf, [name], False)
 
-def ensureStatus(provider, attempts=0):
-    running = provider.isRunning()
+def ensureStatus(manager, attempts=0):
+    running = manager.isRunning()
 
     if not running:
-        logger.info('Attempting to start provider %s', provider.name)
-        if not provider.canStart() or attempts > 30:
-            logger.warn('Could not start provider %s (%i attempts)', provider.name, 0)
+        logger.info('Attempting to start manager %s', manager.name)
+        if not manager.canStart() or attempts > 30:
+            logger.warn('Could not start manager %s (%i attempts)', manager.name, 0)
             return false
 
-        provider.start()
+        manager.start()
         sleep(0.05 * attempts)
-        return ensureStatus(provider, attempts + 1)
+        return ensureStatus(manager, attempts + 1)
 
-    isEnabled = provider.isEnabled()
+    isEnabled = manager.isEnabled()
 
     if not isEnabled:
-        logger.warn('Provider %s is disabled', provider.name)
+        logger.warn('Clipboard manager %s is disabled', manager.name)
 
     return isEnabled
 

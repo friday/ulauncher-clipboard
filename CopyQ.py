@@ -14,7 +14,7 @@ def isRunning():
 
 def isEnabled():
     # activated and configured to sync clipboard
-    # The "Auto" provider detection logic will disfavor copyq when not running because it will show as disabled
+    # The "Auto" option detection logic will disfavor copyq when not running because it will show as disabled
     return isRunning() and subprocess.check_output([client, 'eval', 'monitoring() && config("check_clipboard")']) == 'true\n'
 
 def start():
