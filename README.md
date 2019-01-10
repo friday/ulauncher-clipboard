@@ -10,13 +10,17 @@ Open Ulauncher and type the keyword `c` followed by a space. This will search yo
 
 From Ulauncher's preferences you can change the keyword and the clipboard manager to use, number of results to be shown.
 
-You can also add a *copy hook*. A command to run after copying a clipboard entry. This is mostly a way to support pasting directly, without adding or supporting any such code. Pasting directly isn't possible to achieve safely, but X11 users can use xdotool to trigger the key combinations "ctrl+v" or "shift+insert". This will not work in all applications, and may even have unwanted side effects, so beware!
+If you want to use [GPaste](https://github.com/Keruspe/GPaste/) or [CopyQ](https://github.com/hluk/CopyQ), you have to install them. If you haven't. [Clipster](https://github.com/mrichar1/clipster) will be downloaded automatically.
+
+### Copy hook
+
+ulauncher-clipboard supports a *hook* to run after activating an entry in the list and copying it to the clipboard. This is an indirect way to support pasting. It's not possible to achieve pasting safely, but depending on your system environment you may be able to run a command to trigger "ctrl+v" or "shift+insert". This will not work in all applications, and may even have unwanted side effects, so beware!
+
+In X11 you can use xdotool to do this. Ex:
 
 ```sh
 xdotool key ctrl+v
 ```
-
-If you want to use [GPaste](https://github.com/Keruspe/GPaste/) or [CopyQ](https://github.com/hluk/CopyQ), you have to install them. If you haven't. [Clipster](https://github.com/mrichar1/clipster) will be downloaded automatically.
 
 ## License
 
