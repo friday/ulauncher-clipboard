@@ -8,11 +8,12 @@ from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, findExec
+import Clipster
 import CopyQ
 import GPaste
 
 
-clipboardManagers = [CopyQ, GPaste]
+clipboardManagers = [CopyQ, GPaste, Clipster]
 sorter = lambda m: int("{}{}{}".format(int(m.canStart()), int(m.isEnabled()), int(m.isRunning())))
 
 def getManager(name):
