@@ -30,14 +30,7 @@
       "type": "input",
       "name": "Max results",
       "description": "Maximum number of results to show",
-      "default_value": "6"
-    },
-    {
-      "id": "context_length",
-      "type": "input",
-      "name": "Context size",
-      "description": "Maximum context to show around the result (in characters)",
-      "default_value": "60"
+      "default_value": "8"
     }
   ]
 }

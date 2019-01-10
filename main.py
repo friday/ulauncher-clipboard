@@ -37,7 +37,6 @@ class PreferencesChangeListener(EventListener):
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         maxResults = tryInt(extension.preferences['max_results'], 6)
-        contextLength = tryInt(extension.preferences['context_length'], 60)
         query = (event.get_argument() or '').lower().encode('utf-8')
 
         if not ensureStatus(provider):
@@ -63,7 +62,7 @@ class KeywordQueryEventListener(EventListener):
                     results.append(entry)
 
         # Get the handler for different keywords (only copy for now)
-        handler = partial(entryAsResult, query, contextLength, CopyAction)
+        handler = partial(entryAsResult, query, CopyAction)
 
         if len(results) > 0:
             return RenderResultListAction(list(map(handler, results)))

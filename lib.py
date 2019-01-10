@@ -1,7 +1,9 @@
 import logging
 import subprocess
+import cgi
 from time import sleep
 from distutils.spawn import find_executable as findExec
+from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from actions import DoNothingAction, RenderResultListAction
 
@@ -49,27 +51,31 @@ def showStatus(status):
         highlightable = False
     )])
 
-def entryAsResult(query, contextLength, action, entry):
-    formatted = entry.strip()
-    multiline = '\n' in formatted
-    title = formatted.split('\n', 1)[0]
+def entryAsResult(query, action, entry):
+    entryArr = entry.strip().split('\n')
+    context = []
+    pos = 0
 
-    if multiline:
-        pos = formatted.find(query)
-        start = max(pos - contextLength, 0)
-        end = min(pos + len(query) + contextLength, len(formatted))
-        # Custom highlighting would be nice here but Ulauncher converts tags in the description to entities
-        description = '{}{}{}'.format(
-            '...' if start != 0 else '',
-            formatted[start:end].strip(),
-            '...' if end != len(formatted) else ''
-        )
+    if query:
+        line = filter(lambda l: query in l.lower(), entryArr)[0]
+        pos = entryArr.index(line)
 
-    return ExtensionResultItem(
-        icon          = 'edit-paste.png',
-        name          = title,
-        description   = description if multiline else '',
-        on_enter      = action(entry),
-        # Ulauncher's highlighting is too limiting (turns multi-line to single-line and doesn't work on descriptions)
-        highlightable = False
+    if pos > 0:
+        line = entryArr[pos - 1].strip()
+        if line:
+            context.append('...' + line)
+
+    context.append(entryArr[pos])
+
+    if len(entryArr) > pos + 1:
+        line = entryArr[pos + 1].strip()
+        if line:
+            context.append(line + '...')
+
+    encoded = list(map(cgi.escape, context))
+
+    return ExtensionSmallResultItem(
+        icon     = 'edit-paste.png',
+        name     = '\n'.join(encoded),
+        on_enter = action(entry)
     )
