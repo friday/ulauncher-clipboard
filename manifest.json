@@ -10,7 +10,7 @@
       "id": "manager",
       "type": "select",
       "name": "Clipboard Manager",
-      "description": "Auto will will pick one which is installed and not deactivated.",
+      "description": "Auto will pick one which is installed and not deactivated.",
       "default_value": "Auto",
       "options": [
         "Auto",

@@ -44,7 +44,7 @@ class KeywordQueryEventListener(EventListener):
         query = (event.get_argument() or '').lower().encode('utf-8')
 
         if not ensureStatus(manager):
-            return showStatus('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(name))
+            return showStatus('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(manager.name))
 
         try:
             history = manager.getHistory()

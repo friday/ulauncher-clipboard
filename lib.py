@@ -12,7 +12,7 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 
 logger = logging.getLogger('ulauncher-clipboard')
 
-def tryOr(function, args, fallback):
+def tryOr(function, args, fallback=None):
     try:
         return apply(function, args)
     except Exception:
@@ -25,7 +25,7 @@ def pidOf(name):
     # Get the first pid (there may be many space-separated pids), and parse to int
     # Should probably be rewritten in a more "pythonic" way since lambdas can't do multiple lines/statements
     _pidOf = lambda name: int(subprocess.check_output(['pidof', name]).split(' ', 1)[0], 10)
-    return tryOr(_pidOf, [name], False)
+    return tryOr(_pidOf, ['-x', name], False)
 
 def ensureStatus(manager, attempts=0):
     running = manager.isRunning()
@@ -34,7 +34,7 @@ def ensureStatus(manager, attempts=0):
         logger.info('Attempting to start manager %s', manager.name)
         if not manager.canStart() or attempts > 30:
             logger.warn('Could not start manager %s (%i attempts)', manager.name, 0)
-            return false
+            return False
 
         manager.start()
         sleep(0.05 * attempts)
