@@ -5,7 +5,10 @@ from time import sleep
 from distutils.spawn import find_executable as findExec
 from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from actions import DoNothingAction, ExtensionCustomAction, RenderResultListAction
+from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
+from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
+from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
+
 
 logger = logging.getLogger('ulauncher-clipboard')
 

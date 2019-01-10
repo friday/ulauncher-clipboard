@@ -6,8 +6,8 @@ from functools import partial
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
+from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, findExec
-from actions import RenderResultListAction
 import CopyQ
 import GPaste
 
