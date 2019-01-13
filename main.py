@@ -34,7 +34,7 @@ def setManager(name, extension):
         Notify.init("ulauncher-clipboard-extension")
         message = Notify.Notification.new(
             "Ulauncher-clipboard error",
-            "Could not load {}. Make sure it's installed and enabled".format(manager.name),
+            "Could not load {}. Make sure it's installed and enabled.".format(manager.name),
             icon.get_filename()
         )
 
