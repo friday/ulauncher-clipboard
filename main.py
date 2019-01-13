@@ -1,7 +1,8 @@
 import subprocess
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+gi.require_version('Notify', '0.7')
+from gi.repository import Gtk, Gdk, Notify
 from functools import partial
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -23,21 +24,34 @@ def getManager(name):
 
     return filter(lambda m: m.name == name, clipboardManagers)[0]
 
-def setManager(name):
+def setManager(name, extension):
     global manager
     logger.info('Loading ulauncher-clipboard manager: %s', name)
     manager = getManager(name)
-    ensureStatus(manager)
+    if not ensureStatus(manager):
+        icon = Gtk.IconTheme.get_default().lookup_icon("dialog-error", 48, 0)
+
+        Notify.init("ulauncher-clipboard-extension")
+        message = Notify.Notification.new(
+            "Ulauncher-clipboard error",
+            "Could not load {}. Make sure it's installed and enabled".format(manager.name),
+            icon.get_filename()
+        )
+
+        message.set_timeout(Notify.EXPIRES_NEVER)
+        message.set_urgency(2)
+        message.show()
 
 class PreferencesLoadListener(EventListener):
     def on_event(self, event, extension):
         extension.preferences.update(event.preferences)
-        setManager(event.preferences['manager'])
+        setManager(event.preferences['manager'], extension)
+
 
 class PreferencesChangeListener(EventListener):
     def on_event(self, event, extension):
         if event.id == 'manager':
-            setManager(event.new_value)
+            setManager(event.new_value, extension)
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
