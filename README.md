@@ -10,7 +10,7 @@ Open Ulauncher and type the keyword `c` followed by a space. This will search yo
 
 From Ulauncher's preferences you can change the keyword and the clipboard manager to use, number of results to be shown.
 
-If you want to use [GPaste](https://github.com/Keruspe/GPaste/) or [CopyQ](https://github.com/hluk/CopyQ), you have to install them. If you haven't. [Clipster](https://github.com/mrichar1/clipster) will be downloaded automatically.
+If you want to use [GPaste](https://github.com/Keruspe/GPaste/) or [CopyQ](https://github.com/hluk/CopyQ), you have to install them. Unlike the other options [Clipster](https://github.com/mrichar1/clipster) will be downloaded automatically and is used as the fallback in "Auto" mode if you don't have any of the others.
 
 ### Copy hook
 
