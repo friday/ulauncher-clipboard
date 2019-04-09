@@ -1,6 +1,6 @@
 import subprocess
 import json
-from lib import logger, tryOr, findExec, pidOf
+from lib import logger, execGet, tryOr, findExec, pidOf
 
 
 name = 'CopyQ'
@@ -15,7 +15,7 @@ def isRunning():
 def isEnabled():
     # activated and configured to sync clipboard
     # The "Auto" option detection logic will disfavor copyq when not running because it will show as disabled
-    return isRunning() and subprocess.check_output([client, 'eval', 'monitoring() && config("check_clipboard")']) == 'true\n'
+    return isRunning() and execGet(client, 'eval', 'monitoring() && config("check_clipboard")') == 'true'
 
 def start():
     # Open and don't wait
@@ -24,4 +24,4 @@ def start():
 def getHistory():
     # CopyQ uses QT's JS implementation for scripting, which doesn't support modern JS
     script = "history = []; for (var ind = 0; ind < size(); ind += 1) { history.push(str(read(ind))); }; JSON.stringify(history)"
-    return json.loads(subprocess.check_output([client, 'eval', script]))
+    return json.loads(execGet(client, 'eval', script))

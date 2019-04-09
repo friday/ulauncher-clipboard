@@ -1,7 +1,7 @@
 import os
 import subprocess
 from xml.etree.ElementTree import parse as parseXML
-from lib import logger, findExec, pidOf
+from lib import logger, execGet, findExec, pidOf
 
 
 name = 'GPaste'
@@ -15,7 +15,7 @@ def isRunning():
     return bool(pidOf('gpaste-daemon'))
 
 def isEnabled():
-    return canStart() and subprocess.check_output(['gsettings', 'get', 'org.gnome.GPaste', 'track-changes']) == 'true\n'
+    return canStart() and execGet('gsettings', 'get', 'org.gnome.GPaste', 'track-changes') == 'true'
 
 def start():
     subprocess.call([client, 'start'])

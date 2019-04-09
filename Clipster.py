@@ -2,7 +2,7 @@ import os
 import subprocess
 import re
 import urllib
-from lib import logger, findExec, pidOf
+from lib import logger, execGet, findExec, pidOf
 
 
 name = 'Clipster'
@@ -36,7 +36,7 @@ def start():
 def getHistory():
     # Clipster uses a json log file. However the default config is to defer/collect writes
     # so we have to call the client to get the latest
-    return subprocess.check_output([client, '--output', '--clipboard', '--number', '0', '--delim', delim]).split(delim)
+    return execGet(client, '--output', '--clipboard', '--number', '0', '--delim', delim).split(delim)
 
 # Download and prepare binary
 if not canStart():
@@ -45,7 +45,7 @@ if not canStart():
     # Force it to use Python2 (otherwise it crashes if run from Ulauncher)
     # Using env in the shebang makes the process name "python2" instead of Clipster
     # I'm sure there's a better way, but until then...
-    pythonBinary = subprocess.check_output(['sh', '-c',  'env python2 -c "import sys; sys.stdout.write(sys.executable)"'])
+    pythonBinary = execGet('sh', '-c',  'env python2 -c "import sys; sys.stdout.write(sys.executable)"')
     subprocess.call(['sed', '-i', '1s|.*|#\\!{}|'.format(pythonBinary), client])
     # Make it executable
     os.chmod(client, 0o755)

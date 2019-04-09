@@ -15,6 +15,9 @@ logger = logging.getLogger('ulauncher-clipboard')
 Notify.init('ulauncher-clipboard-extension')
 
 
+def execGet(*args):
+    return subprocess.check_output(list(args)).rstrip()
+
 def tryOr(function, args, fallback=None):
     try:
         return apply(function, args)
@@ -26,7 +29,7 @@ def tryInt(string, fallback=0):
 
 def pidOf(name):
     # Get the first pid (there may be many space-separated pids), and parse to int
-    pids = tryOr(subprocess.check_output, [['pidof', '-x', name]], '').strip().split(' ')
+    pids = tryOr(execGet, ['pidof', '-x', name], '').split(' ')
     return tryInt(pids[0], None)
 
 def getThemeIcon(name, size):
