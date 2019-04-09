@@ -26,6 +26,6 @@ def getHistory():
     for child in parseXML(dataFile).getroot():
         # Ignore non-text entries
         if child.attrib['kind'] == 'Text':
-            history.append(child.getchildren()[0].text.encode('utf-8'))
-
+            # Encode and replace &gt; with > since etree fails to do so with GPastes invalid(?) XML 1.0-format
+            history.append(child.getchildren()[0].text.encode('utf-8').replace('&gt;', '>'))
     return history

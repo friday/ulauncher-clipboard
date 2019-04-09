@@ -1,4 +1,3 @@
-import cgi
 import subprocess
 import Clipster
 import CopyQ
@@ -47,11 +46,9 @@ def formatEntry(query, entry):
         if line:
             context.append(line + '...')
 
-    encoded = list(map(cgi.escape, context))
-
     return ExtensionSmallResultItem(
         icon     = 'edit-paste.png',
-        name     = '\n'.join(encoded),
+        name     = '\n'.join(context),
         on_enter = ExtensionCustomAction(entry)
     )
 
