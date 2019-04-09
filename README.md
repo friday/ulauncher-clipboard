@@ -26,4 +26,5 @@ xdotool key ctrl+v
 
 The code is licensed as MIT.
 
-The icon is part of [Paper Icons](http://snwh.org/paper/icons) by [Sam Hewitt](http://samuelhewitt.com/), and is licensed under [CC-SA-4.0](http://creativecommons.org/licenses/by-sa/4.0/)
+ulauncher-clipboard will try to use your icon theme.
+The fallback icons (also used in the screen shot) are part of [Paper Icons](http://snwh.org/paper/icons) by [Sam Hewitt](http://samuelhewitt.com/), and is licensed under [CC-SA-4.0](http://creativecommons.org/licenses/by-sa/4.0/)
