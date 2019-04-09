@@ -26,7 +26,7 @@ def showStatus(status):
         highlightable = False
     )])
 
-def entryAsResult(query, entry):
+def formatEntry(query, entry):
     entryArr = entry.strip().split('\n')
     context = []
     pos = 0
@@ -115,7 +115,7 @@ class KeywordQueryEventListener(EventListener):
             lines = 0
             results = []
             for entry in matches:
-                result = entryAsResult(query, entry)
+                result = formatEntry(query, entry)
                 # Limit to max lines and compensate for the margin
                 lines += max(1, (result.get_name().count('\n') + 1) * 0.85)
                 if maxLines >= lines:
