@@ -1,21 +1,59 @@
+import cgi
 import subprocess
-import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Notify', '0.7')
-from gi.repository import Gtk, Gdk, Notify
-from functools import partial
-from ulauncher.api.client.Extension import Extension
-from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-from lib import logger, pidOf, tryInt, ensureStatus, showStatus, entryAsResult, findExec
 import Clipster
 import CopyQ
 import GPaste
 
+from functools import partial
+from lib import logger, pidOf, tryInt, ensureStatus, findExec, getThemeIcon, setClipboard, showMessage
+from ulauncher.api.client.Extension import Extension
+from ulauncher.api.client.EventListener import EventListener
+from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
+from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
+from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
+from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
+from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
+from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
+
 
 clipboardManagers = [CopyQ, GPaste, Clipster]
 sorter = lambda m: int("{}{}".format(int(m.isEnabled()), int(m.isRunning())))
+
+def showStatus(status):
+    return RenderResultListAction([ExtensionResultItem(
+        name          = status,
+        on_enter      = DoNothingAction(),
+        highlightable = False
+    )])
+
+def entryAsResult(query, entry):
+    entryArr = entry.strip().split('\n')
+    context = []
+    pos = 0
+
+    if query:
+        line = filter(lambda l: query in l.lower(), entryArr)[0]
+        pos = entryArr.index(line)
+
+    if pos > 0:
+        line = entryArr[pos - 1].strip()
+        if line:
+            context.append('...' + line)
+
+    context.append(entryArr[pos])
+
+    if len(entryArr) > pos + 1:
+        line = entryArr[pos + 1].strip()
+        if line:
+            context.append(line + '...')
+
+    encoded = list(map(cgi.escape, context))
+
+    return ExtensionSmallResultItem(
+        icon     = 'edit-paste.png',
+        name     = '\n'.join(encoded),
+        on_enter = ExtensionCustomAction(entry)
+    )
 
 def getManager(name):
     if name == 'Auto':
@@ -29,18 +67,11 @@ def setManager(name, extension):
     logger.info('Loading ulauncher-clipboard manager: %s', name)
     manager = getManager(name)
     if not ensureStatus(manager):
-        icon = Gtk.IconTheme.get_default().lookup_icon("dialog-error", 48, 0)
-
-        Notify.init("ulauncher-clipboard-extension")
-        message = Notify.Notification.new(
-            "ulauncher-clipboard error",
+        showMessage(
+            'ulauncher-clipboard error',
             "Could not load {}. Make sure it's installed and enabled.".format(manager.name),
-            icon.get_filename()
+            getThemeIcon("dialog-error", 48)
         )
-
-        message.set_timeout(Notify.EXPIRES_NEVER)
-        message.set_urgency(2)
-        message.show()
 
 class PreferencesLoadListener(EventListener):
     def on_event(self, event, extension):
@@ -96,12 +127,9 @@ class KeywordQueryEventListener(EventListener):
 
 class ItemEnterEventListener(EventListener):
     def on_event(self, event, extension):
-        text = event.get_data()
+        setClipboard(event.get_data())
         copyHook = extension.preferences['copy_hook']
 
-        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-        clipboard.set_text(text, -1)
-        clipboard.store()
         if copyHook:
             logger.info('Running copy hook: ' + copyHook)
             subprocess.Popen(['sh', '-c', copyHook])

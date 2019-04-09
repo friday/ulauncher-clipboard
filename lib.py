@@ -1,16 +1,19 @@
 import logging
 import subprocess
-import cgi
+import gi
+
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
+gi.require_version('Notify', '0.7')
+
+from gi.repository import Gdk, Gtk, Notify
 from time import sleep
 from distutils.spawn import find_executable as findExec
-from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
-from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
-from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 
 
 logger = logging.getLogger('ulauncher-clipboard')
+Notify.init('ulauncher-clipboard-extension')
+
 
 def tryOr(function, args, fallback=None):
     try:
@@ -25,6 +28,21 @@ def pidOf(name):
     # Get the first pid (there may be many space-separated pids), and parse to int
     pids = tryOr(subprocess.check_output, [['pidof', '-x', name]], '').strip().split(' ')
     return tryInt(pids[0], None)
+
+def getThemeIcon(name, size):
+    return Gtk.IconTheme.get_default().lookup_icon(name, size, 0).get_filename()
+
+def setClipboard(text):
+    clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+    clipboard.set_text(text, -1)
+    clipboard.store()
+
+def showMessage(title, message, icon, expires=Notify.EXPIRES_NEVER, urgency=2):
+    message = Notify.Notification.new(title, message, icon)
+    message.set_timeout(expires)
+    message.set_urgency(urgency)
+    message.show()
+    return message
 
 def ensureStatus(manager, attempts=0):
     running = manager.isRunning()
@@ -45,39 +63,3 @@ def ensureStatus(manager, attempts=0):
         logger.warn('Clipboard manager %s is disabled', manager.name)
 
     return isEnabled
-
-def showStatus(status):
-    return RenderResultListAction([ExtensionResultItem(
-        name          = status,
-        on_enter      = DoNothingAction(),
-        highlightable = False
-    )])
-
-def entryAsResult(query, entry):
-    entryArr = entry.strip().split('\n')
-    context = []
-    pos = 0
-
-    if query:
-        line = filter(lambda l: query in l.lower(), entryArr)[0]
-        pos = entryArr.index(line)
-
-    if pos > 0:
-        line = entryArr[pos - 1].strip()
-        if line:
-            context.append('...' + line)
-
-    context.append(entryArr[pos])
-
-    if len(entryArr) > pos + 1:
-        line = entryArr[pos + 1].strip()
-        if line:
-            context.append(line + '...')
-
-    encoded = list(map(cgi.escape, context))
-
-    return ExtensionSmallResultItem(
-        icon     = 'edit-paste.png',
-        name     = '\n'.join(encoded),
-        on_enter = ExtensionCustomAction(entry)
-    )
