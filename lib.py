@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import gi
+import os
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
@@ -32,8 +33,36 @@ def pidOf(name):
     pids = tryOr(execGet, ['pidof', '-x', name], '').split(' ')
     return tryInt(pids[0], None)
 
-def getThemeIcon(name, size):
-    return Gtk.IconTheme.get_default().lookup_icon(name, size, 0).get_filename()
+def getThemeIcon(name, size, fallback=None):
+    try:
+        logger.info('Trying to get icon for %s', name)
+        desktopEnv = os.getenv('XDG_CURRENT_DESKTOP')
+        if desktopEnv == 'Budgie:GNOME':
+            desktopEnv = 'GNOME'
+
+        # "Gtk.IconTheme.get_default()" only gets the Gnome theme unfortunately, and doesn't update if the user switches the theme
+        # This is far from every popular DE. I just added the ones I could test for
+        # Gnome also has used and may still support ~/.gtkrc-2.0 or $XDG_CONFIG_HOME/gtk-3.0/settings.ini
+        # If implementing setters: change gsettings "get" to "set" and add the extra arg last, and add "-s something" for xfconf-query
+        iconThemeCmd = {
+            'GNOME': 'gsettings get org.gnome.desktop.interface icon-theme',
+            'X-Cinnamon': 'gsettings get org.cinnamon.desktop.interface icon-theme',
+            'MATE': 'gsettings get org.mate.interface icon-theme',
+            'xfce': 'xfconf-query -c xsettings -p /Net/IconThemeName',
+        }[desktopEnv]
+
+        if iconThemeCmd:
+            iconThemeName = execGet('sh', '-c', iconThemeCmd).replace('\'', '')
+
+        if iconThemeName:
+            theme = Gtk.IconTheme.new()
+            theme.set_custom_theme(iconThemeName)
+            return theme.lookup_icon(name, size, 0).get_filename()
+
+    except Exception:
+        pass
+
+    return fallback
 
 def setClipboard(text):
     clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)

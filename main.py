@@ -25,7 +25,7 @@ def showStatus(status):
         highlightable = False
     )])
 
-def formatEntry(query, entry):
+def formatEntry(icon, query, entry):
     entryArr = entry.strip().split('\n')
     context = []
     pos = 0
@@ -47,7 +47,7 @@ def formatEntry(query, entry):
             context.append(line + '...')
 
     return ExtensionSmallResultItem(
-        icon     = 'edit-paste.png',
+        icon     = icon,
         name     = '\n'.join(context),
         on_enter = ExtensionCustomAction(entry)
     )
@@ -67,7 +67,7 @@ def setManager(name, extension):
         showMessage(
             'ulauncher-clipboard error',
             "Could not load {}. Make sure it's installed and enabled.".format(manager.name),
-            getThemeIcon("dialog-error", 48)
+            getThemeIcon('dialog-error', 32, 'dialog-error.png')
         )
 
 class PreferencesLoadListener(EventListener):
@@ -84,6 +84,7 @@ class PreferencesChangeListener(EventListener):
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         maxLines = tryInt(extension.preferences['max_lines'], 20)
+        icon = getThemeIcon('edit-paste', 32, 'edit-paste.png')
         query = (event.get_argument() or '').lower().encode('utf-8')
 
         if not ensureStatus(manager):
@@ -112,7 +113,7 @@ class KeywordQueryEventListener(EventListener):
             lines = 0
             results = []
             for entry in matches:
-                result = formatEntry(query, entry)
+                result = formatEntry(icon, query, entry)
                 # Limit to max lines and compensate for the margin
                 lines += max(1, (result.get_name().count('\n') + 1) * 0.85)
                 if maxLines >= lines:
