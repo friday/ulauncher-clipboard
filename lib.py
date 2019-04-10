@@ -40,10 +40,8 @@ def getThemeIcon(name, size, fallback=None):
         if desktopEnv == 'Budgie:GNOME':
             desktopEnv = 'GNOME'
 
-        # "Gtk.IconTheme.get_default()" only gets the Gnome theme unfortunately, and doesn't update if the user switches the theme
-        # This is far from every popular DE. I just added the ones I could test for
-        # Gnome also has used and may still support ~/.gtkrc-2.0 or $XDG_CONFIG_HOME/gtk-3.0/settings.ini
-        # If implementing setters: change gsettings "get" to "set" and add the extra arg last, and add "-s something" for xfconf-query
+        # "Gtk.IconTheme.get_default()" can only get the Gnome theme, and doesn't update if the user switches it
+        # This list is incomplete (part of why we need the try/except and fallback)
         iconThemeCmd = {
             'GNOME': 'gsettings get org.gnome.desktop.interface icon-theme',
             'X-Cinnamon': 'gsettings get org.cinnamon.desktop.interface icon-theme',
