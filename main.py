@@ -3,7 +3,6 @@ import Clipster
 import CopyQ
 import GPaste
 
-from functools import partial
 from lib import logger, pidOf, tryInt, ensureStatus, findExec, getThemeIcon, setClipboard, showMessage
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
