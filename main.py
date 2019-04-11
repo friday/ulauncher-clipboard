@@ -66,7 +66,7 @@ def setManager(name, extension):
         showMessage(
             'ulauncher-clipboard error',
             "Could not load {}. Make sure it's installed and enabled.".format(manager.name),
-            getThemeIcon('dialog-error', 32, 'dialog-error.png')
+            getThemeIcon('dialog-error', 32)
         )
 
 class PreferencesLoadListener(EventListener):
@@ -83,7 +83,7 @@ class PreferencesChangeListener(EventListener):
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         maxLines = tryInt(extension.preferences['max_lines'], 20)
-        icon = getThemeIcon('edit-paste', 32, 'edit-paste.png')
+        icon = getThemeIcon('edit-paste', 32)
         query = (event.get_argument() or '').lower().encode('utf-8')
 
         if not ensureStatus(manager):

@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import sys
 import gi
 import os
 
@@ -33,34 +34,10 @@ def pidOf(name):
     pids = tryOr(execGet, ['pidof', '-x', name], '').split(' ')
     return tryInt(pids[0], None)
 
-def getThemeIcon(name, size, fallback=None):
-    try:
-        logger.info('Trying to get icon for %s', name)
-        desktopEnv = os.getenv('XDG_CURRENT_DESKTOP')
-        if desktopEnv == 'Budgie:GNOME':
-            desktopEnv = 'GNOME'
-
-        # "Gtk.IconTheme.get_default()" can only get the Gnome theme, and doesn't update if the user switches it
-        # This list is incomplete (part of why we need the try/except and fallback)
-        iconThemeCmd = {
-            'GNOME': 'gsettings get org.gnome.desktop.interface icon-theme',
-            'X-Cinnamon': 'gsettings get org.cinnamon.desktop.interface icon-theme',
-            'MATE': 'gsettings get org.mate.interface icon-theme',
-            'xfce': 'xfconf-query -c xsettings -p /Net/IconThemeName',
-        }[desktopEnv]
-
-        if iconThemeCmd:
-            iconThemeName = execGet('sh', '-c', iconThemeCmd).replace('\'', '')
-
-        if iconThemeName:
-            theme = Gtk.IconTheme.new()
-            theme.set_custom_theme(iconThemeName)
-            return theme.lookup_icon(name, size, 0).get_filename()
-
-    except Exception:
-        pass
-
-    return fallback
+# Run each call in a new throwaway thread to escape Gtk.IconTheme.get_default() stupid cache
+def getThemeIcon(name, size):
+    getIconCode = "Gtk.IconTheme.get_default().lookup_icon('{}', {}, 0).get_filename()".format(name, size)
+    return execGet(sys.executable, '-c', "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; print({})".format(getIconCode))
 
 def setClipboard(text):
     clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
