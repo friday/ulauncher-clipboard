@@ -53,10 +53,12 @@ def formatEntry(icon, query, entry):
 
 def getManager(name):
     if name == 'Auto':
-        contenders = filter(lambda m: m.canStart(), clipboardManagers);
+        contenders = [m for m in clipboardManagers if m.canStart()];
         return sorted(contenders, key=sorter)[-1]
 
-    return filter(lambda m: m.name == name, clipboardManagers)[0]
+    for m in clipboardManagers:
+        if m.name == name:
+            return m
 
 def setManager(name, extension):
     global manager
@@ -84,7 +86,7 @@ class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         maxLines = tryInt(extension.preferences['max_lines'], 20)
         icon = getThemeIcon('edit-paste', 32)
-        query = (event.get_argument() or '').lower().encode('utf-8')
+        query = (event.get_argument() or '').lower()
 
         if not ensureStatus(manager):
             return showStatus('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(manager.name))

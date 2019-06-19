@@ -1,7 +1,7 @@
 import os
 import subprocess
 import re
-import urllib
+import urllib.request
 from lib import logger, execGet, findExec, pidOf
 
 
@@ -10,11 +10,7 @@ name = 'Clipster'
 binUrl = 'https://raw.githubusercontent.com/mrichar1/clipster/master/clipster'
 # The delimiter needs to be long and complicated to avoid being something you copied
 delim = 'a8;bpy]rAM6XFOgT#:m9C{3Qj4WFLxAE@{?FL_Os_]e,b]i=ah;+0[vG,;yurpHW>j?oAImf3,<RlrEUA,uqYPVm^ti(+/)!cNAg'
-# Get the path to the extension
-extDir = os.path.dirname(os.path.realpath(__file__))
-# We can't use the global binary since we can't control the Python version it runs
-# When Ulauncher upgrades to Python 3 it'll likely work, or reverse the problem
-client = '{}/{}'.format(extDir, 'clipster')
+client = 'clipster'
 
 def canStart():
     # Should always be true considering ^ but still good to test
@@ -38,14 +34,14 @@ def getHistory():
     # so we have to call the client to get the latest
     return execGet(client, '--output', '--clipboard', '--number', '0', '--delim', delim).split(delim)
 
-# Download and prepare binary
+# Try finding global clipster binary
 if not canStart():
-    # If there's no local client, fetch it
-    urllib.urlretrieve(binUrl, client)
-    # Force it to use Python2 (otherwise it crashes if run from Ulauncher)
-    # Using env in the shebang makes the process name "python2" instead of Clipster
-    # I'm sure there's a better way, but until then...
-    pythonBinary = execGet('sh', '-c',  'env python2 -c "import sys; sys.stdout.write(sys.executable)"')
-    subprocess.call(['sed', '-i', '1s|.*|#\\!{}|'.format(pythonBinary), client])
-    # Make it executable
-    os.chmod(client, 0o755)
+    # Get the path to the extension
+    extDir = os.path.dirname(os.path.realpath(__file__))
+    # The name of the local binary must not be "clipster" to avoid an issue when down/upgrading between ulauncher v4/v5
+    client = '{}/{}'.format(extDir, 'clipster_bin')
+    # Try finding local binary
+    if not canStart():
+        # Download and prepare binary
+        urllib.request.urlretrieve(binUrl, client)
+        os.chmod(client, 0o755)
