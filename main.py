@@ -30,7 +30,7 @@ def formatEntry(icon, query, entry):
     pos = 0
 
     if query:
-        line = filter(lambda l: query in l.lower(), entryArr)[0]
+        line = next(l for l in entryArr if query in l.lower())
         pos = entryArr.index(line)
 
     if pos > 0:
