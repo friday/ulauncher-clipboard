@@ -17,8 +17,8 @@ def canStart():
     return bool(findExec(client))
 
 def isRunning():
-    # Also must detect if global clipster is running, so don't use "client" variable
-    return bool(pidOf('clipster'))
+    # Check if global clipster is running before the auto downloaded one
+    return bool(pidOf('clipster') or pidOf('clipster_bin'))
 
 def isEnabled():
     # We can't really know this. Users can configure clipster.ini not to sync the clipboard
