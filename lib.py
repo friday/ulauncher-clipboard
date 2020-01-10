@@ -8,7 +8,7 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 gi.require_version('Notify', '0.7')
 
-from gi.repository import Gdk, Gtk, Notify
+from gi.repository import Gdk, Gtk, Notify, GObject
 from time import sleep
 from distutils.spawn import find_executable as findExec
 
@@ -43,6 +43,8 @@ def setClipboard(text):
     clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
     clipboard.set_text(text, -1)
     clipboard.store()
+    GObject.timeout_add(1, Gtk.main_quit)
+    Gtk.main()
 
 def showMessage(title, message, icon, expires=Notify.EXPIRES_NEVER, urgency=2):
     message = Notify.Notification.new(title, message, icon)
