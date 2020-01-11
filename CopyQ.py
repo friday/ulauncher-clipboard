@@ -15,7 +15,7 @@ def isRunning():
 def isEnabled():
     # activated and configured to sync clipboard
     # The "Auto" option detection logic will disfavor copyq when not running because it will show as disabled
-    return isRunning() and execGet(client, 'eval', 'monitoring() && config("check_clipboard")') == 'true'
+    return canStart() and isRunning() and execGet(client, 'eval', 'monitoring() && config("check_clipboard")') == 'true'
 
 def start():
     # Open and don't wait
