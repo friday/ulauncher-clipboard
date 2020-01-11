@@ -29,6 +29,9 @@ def start():
     if not isRunning():
         subprocess.Popen([client, '-d'])
 
+def add(text):
+    subprocess.run([client, '-c'], input=text, encoding='utf-8')
+
 def getHistory():
     # Clipster uses a json log file. However the default config is to defer/collect writes
     # so we have to call the client to get the latest

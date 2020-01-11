@@ -24,6 +24,9 @@ def isEnabled():
 def start():
     subprocess.call([client, 'start'])
 
+def add(text):
+    subprocess.call([client, 'add', text])
+
 def getHistory():
     history = []
     # Load data from the xml file (using the GPaste CLI would be way too slow)

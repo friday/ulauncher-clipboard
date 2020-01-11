@@ -126,8 +126,16 @@ class KeywordQueryEventListener(EventListener):
 
 class ItemEnterEventListener(EventListener):
     def on_event(self, event, extension):
-        setClipboard(event.get_data())
+        text = event.get_data()
         copyHook = extension.preferences['copy_hook']
+
+        # Prefer to use the clipboard managers own implementation
+        if getattr(manager, 'add', None):
+            logger.info("Adding to clipboard using clipboard manager's method")
+            manager.add(text)
+        else:
+            logger.info("Adding to clipboard using fallback method")
+            setClipboard(text)
 
         if copyHook:
             logger.info('Running copy hook: ' + copyHook)
