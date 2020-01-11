@@ -1,6 +1,5 @@
 import os
 import subprocess
-from xml.etree.ElementTree import parse as parseXML
 from lib import logger, execGet, findExec, pidOf
 
 
@@ -28,11 +27,6 @@ def add(text):
     subprocess.call([client, 'add', text])
 
 def getHistory():
-    history = []
-    # Load data from the xml file (using the GPaste CLI would be way too slow)
-    for child in parseXML(dataFile).getroot():
-        # Ignore non-text entries
-        if child.attrib['kind'] == 'Text':
-            # Replace &gt; with > since etree fails to do so with GPastes invalid(?) XML 1.0-format
-            history.append(child.getchildren()[0].text.replace('&gt;', '>'))
-    return history
+    # The only separator options are zero butes and line breaks, and line breaks are very likely to be in the clipboard,
+    # Zero bytes are less likely, but would not be my first choice
+    return execGet('sh', '-c', "{0} $({0} get-history) --raw --zero".format(client)).split('\x00')
