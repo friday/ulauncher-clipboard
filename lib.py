@@ -43,7 +43,7 @@ def setClipboard(text):
     clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
     clipboard.set_text(text, -1)
     clipboard.store()
-    GObject.timeout_add(1, Gtk.main_quit)
+    GObject.timeout_add(25, Gtk.main_quit)
     Gtk.main()
 
 def showMessage(title, message, icon, expires=Notify.EXPIRES_NEVER, urgency=2):
