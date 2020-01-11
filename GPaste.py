@@ -27,6 +27,7 @@ def add(text):
     subprocess.call([client, 'add', text])
 
 def getHistory():
-    # The only separator options are zero butes and line breaks, and line breaks are very likely to be in the clipboard,
-    # Zero bytes are less likely, but would not be my first choice
+    # The only separator options are zero bytes and line breaks.
+    # Line breaks are very likely to be in the actual clipboard entries, so we can't use that.
+    # Zero bytes are less likely, but would not be my first choice.
     return execGet('sh', '-c', "{0} $({0} get-history) --raw --zero".format(client)).split('\x00')
