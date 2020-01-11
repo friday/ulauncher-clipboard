@@ -5,11 +5,6 @@ from lib import logger, execGet, findExec, pidOf
 
 name = 'GPaste'
 client = 'gpaste-client'
-dataFile = '{}/.local/share/GPaste/history.xml'.format(os.path.expanduser('~'))
-
-# Fall back on old lowercased GPaste directory.
-if not os.path.isfile(dataFile):
-    dataFile = dataFile.lower()
 
 def canStart():
     return bool(findExec(client))
