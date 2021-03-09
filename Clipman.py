@@ -24,7 +24,7 @@ def add(text):
     subprocess.call(['wl-copy', text])
 
 def getHistory():
-    val=json.loads(execGet(client, 'showHistory'))
+    val=json.loads(execGet(client, 'show-history'))
     val.reverse()
     return val
 
