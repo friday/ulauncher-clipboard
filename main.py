@@ -2,6 +2,7 @@ import subprocess
 import Clipster
 import CopyQ
 import GPaste
+import Clipman
 
 from lib import logger, pidOf, tryInt, ensureStatus, findExec, getThemeIcon, setClipboard, showMessage
 from ulauncher.api.client.Extension import Extension
@@ -14,7 +15,7 @@ from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAct
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 
 
-clipboardManagers = [CopyQ, GPaste, Clipster]
+clipboardManagers = [CopyQ, GPaste, Clipster, Clipman]
 sorter = lambda m: int("{}{}".format(int(m.isEnabled()), int(m.isRunning())))
 
 def showStatus(status):
