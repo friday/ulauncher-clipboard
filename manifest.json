@@ -3,7 +3,7 @@
   "required_api_version": "2",
   "api_version": "1",
   "name": "Clipboard",
-  "description": "Ulauncher clipboard management using GPaste, Clipster or CopyQ",
+  "description": "Ulauncher clipboard management using GPaste, Clipster, Clipman or CopyQ",
   "developer_name": "Albin Larsson",
   "icon": "edit-paste.png",
   "preferences": [
@@ -17,7 +17,8 @@
         "Auto",
         "Clipster",
         "CopyQ",
-        "GPaste"
+        "GPaste",
+        "Clipman"
       ]
     },
     {
