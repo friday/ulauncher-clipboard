@@ -11,8 +11,7 @@ def canStart():
     return bool(findExec(client))
 
 def isRunning():
-    return True
-    return bool(pidOf(client))
+    return bool(pidOf(pasteAgent))
 
 def isEnabled():
     # We can't really know this.
