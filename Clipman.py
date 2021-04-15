@@ -19,7 +19,7 @@ def isEnabled():
 
 def start():
     # Open and don't wait
-    subprocess.Popen([pasteAgent, '-t', 'text', "--watch", client ,'store'])
+    subprocess.Popen([pasteAgent, '-t', 'text', "--watch", client ,'store', '-P'])
 
 def add(text):
     # manager is based on another clipboard program
