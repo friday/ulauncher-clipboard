@@ -2,7 +2,7 @@
 
 [Ulauncher](https://ulauncher.io) extension for managing your clipboard history
 
-<img src="screenshot.png" width="500">
+<img src="screenshot.png" width="500" height="623">
 
 ## Usage
 
