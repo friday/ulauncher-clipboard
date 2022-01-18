@@ -1,10 +1,8 @@
 import subprocess
-import Clipster
-import CopyQ
-import GPaste
-import Clipman
 
 from lib import logger, try_int, ensure_status, get_theme_icon, set_clipboard, show_message
+from managers import Clipman, Clipster, CopyQ, GPaste
+
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
