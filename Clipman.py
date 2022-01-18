@@ -1,19 +1,19 @@
 import subprocess
 import json
-from lib import execGet, findExec, pidOf
+from lib import exec_get, find_exec, pid_of
 
 name = 'Clipman'
 client = 'clipman'
 pasteAgent = "wl-paste"
 copyAgent = "wl-copy"
 
-def canStart():
-    return bool(findExec(client))
+def can_start():
+    return bool(find_exec(client))
 
-def isRunning():
-    return bool(pidOf(pasteAgent))
+def is_running():
+    return bool(pid_of(pasteAgent))
 
-def isEnabled():
+def is_enabled():
     # We can't really know this.
     return True
 
@@ -25,8 +25,8 @@ def add(text):
     # manager is based on another clipboard program
     subprocess.call([copyAgent, text])
 
-def getHistory():
-    val=json.loads(execGet(client, 'show-history'))
+def get_history():
+    val=json.loads(exec_get(client, 'show-history'))
     val.reverse()
     return val
 

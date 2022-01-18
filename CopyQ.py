@@ -1,21 +1,21 @@
 import subprocess
 import json
-from lib import execGet, findExec, pidOf
+from lib import exec_get, find_exec, pid_of
 
 
 name = 'CopyQ'
 client = 'copyq'
 
-def canStart():
-    return bool(findExec(client))
+def can_start():
+    return bool(find_exec(client))
 
-def isRunning():
-    return bool(pidOf(client))
+def is_running():
+    return bool(pid_of(client))
 
-def isEnabled():
+def is_enabled():
     # activated and configured to sync clipboard
     # The "Auto" option detection logic will disfavor copyq when not running because it will show as disabled
-    return canStart() and isRunning() and execGet(client, 'eval', 'monitoring() && config("check_clipboard")') == 'true'
+    return can_start() and is_running() and exec_get(client, 'eval', 'monitoring() && config("check_clipboard")') == 'true'
 
 def start():
     # Open and don't wait
@@ -26,7 +26,7 @@ def add(text):
     subprocess.call([client, 'add', text])
     subprocess.call([client, 'copy', text])
 
-def getHistory():
+def get_history():
     # CopyQ uses QT's JS implementation for scripting, which doesn't support modern JS
     script = "history = []; for (var ind = 0; ind < size(); ind += 1) {var text = str(read(ind)); if (history.indexOf(text) === -1) history.push(text); }; JSON.stringify(history)"
-    return json.loads(execGet(client, 'eval', script))
+    return json.loads(exec_get(client, 'eval', script))
