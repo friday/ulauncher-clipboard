@@ -84,7 +84,7 @@ class PreferencesChangeListener(EventListener):
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         max_lines = try_int(extension.preferences['max_lines'], 20)
-        icon = get_theme_icon('edit-paste', 32)
+        icon = 'edit-paste.png'
         query = (event.get_argument() or '').lower()
 
         if not ensure_status(manager):
