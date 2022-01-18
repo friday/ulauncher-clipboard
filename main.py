@@ -8,7 +8,6 @@ from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
 from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 
@@ -19,7 +18,7 @@ sorter = lambda m: int("{}{}".format(int(m.is_enabled()), int(m.is_running())))
 def show_status(status):
     return RenderResultListAction([ExtensionResultItem(
         name          = status,
-        on_enter      = DoNothingAction(),
+        icon          = 'edit-paste.png',
         highlightable = False
     )])
 
