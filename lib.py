@@ -2,9 +2,11 @@ import logging
 import subprocess
 import gi
 
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
-gi.require_version('Notify', '0.7')
+gi.require_versions({
+    'Gdk': '3.0',
+    'Gtk': '3.0',
+    'Notify': '0.7',
+})
 
 from gi.repository import Gdk, Gtk, Notify, GObject
 from time import sleep
