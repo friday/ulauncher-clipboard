@@ -1,6 +1,5 @@
 import logging
 import subprocess
-import sys
 import gi
 from distutils.spawn import find_executable as find_exec
 
@@ -33,11 +32,6 @@ def pid_of(name):
     pids = try_or(exec_get, ['pidof', '-x', name], '').split(' ')
     return try_int(pids[0], None)
 
-# Run each call in a new throwaway thread to escape Gtk.IconTheme.get_default() stupid cache
-def get_theme_icon(name, size):
-    getIconCode = "Gtk.IconTheme.get_default().lookup_icon('{}', {}, 0).get_filename()".format(name, size)
-    return exec_get(sys.executable, '-c', "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; print({})".format(getIconCode))
-
 def set_clipboard(text):
     clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
     clipboard.set_text(text, -1)
@@ -45,8 +39,8 @@ def set_clipboard(text):
     GObject.timeout_add(25, Gtk.main_quit)
     Gtk.main()
 
-def show_message(title, message, icon, expires=Notify.EXPIRES_NEVER, urgency=2):
-    message = Notify.Notification.new(title, message, icon)
+def show_message(title, body, icon, expires=Notify.EXPIRES_NEVER, urgency=2):
+    message = Notify.Notification.new(title, body, icon)
     message.set_timeout(expires)
     message.set_urgency(urgency)
     message.show()

@@ -1,6 +1,6 @@
 import subprocess
 
-from lib import logger, try_int, ensure_status, get_theme_icon, set_clipboard, show_message
+from lib import logger, try_int, ensure_status, set_clipboard, show_message
 from managers import Clipman, Clipster, CopyQ, GPaste
 
 from ulauncher.api.client.Extension import Extension
@@ -67,7 +67,7 @@ def set_manager(name, extension):
         show_message(
             'ulauncher-clipboard error',
             "Could not load {}. Make sure it's installed and enabled.".format(manager.name),
-            get_theme_icon('dialog-error', 32)
+            'dialog-error'
         )
 
 class PreferencesLoadListener(EventListener):
