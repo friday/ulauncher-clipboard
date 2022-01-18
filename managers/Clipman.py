@@ -1,6 +1,7 @@
 import subprocess
 import json
-from lib import exec_get, find_exec, pid_of
+from shutil import which
+from lib import exec_get, pid_of
 
 name = 'Clipman'
 client = 'clipman'
@@ -8,7 +9,7 @@ pasteAgent = "wl-paste"
 copyAgent = "wl-copy"
 
 def can_start():
-    return bool(find_exec(client))
+    return bool(which(client))
 
 def is_running():
     return bool(pid_of(pasteAgent))

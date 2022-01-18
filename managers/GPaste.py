@@ -1,12 +1,13 @@
 import subprocess
-from lib import exec_get, find_exec, pid_of
+from shutil import which
+from lib import exec_get, pid_of
 
 
 name = 'GPaste'
 client = 'gpaste-client'
 
 def can_start():
-    return bool(find_exec(client))
+    return bool(which(client))
 
 def is_running():
     return bool(pid_of('gpaste-daemon'))

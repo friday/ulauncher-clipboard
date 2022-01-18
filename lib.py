@@ -1,7 +1,6 @@
 import logging
 import subprocess
 import gi
-from distutils.spawn import find_executable as find_exec
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')

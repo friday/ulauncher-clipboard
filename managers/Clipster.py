@@ -1,7 +1,8 @@
 import os
 import subprocess
 import urllib.request
-from lib import exec_get, find_exec, pid_of
+from shutil import which
+from lib import exec_get, pid_of
 
 
 name = 'Clipster'
@@ -13,7 +14,7 @@ client = 'clipster'
 
 def can_start():
     # Should always be true considering ^ but still good to test
-    return bool(find_exec(client))
+    return bool(which(client))
 
 def is_running():
     # Check if global clipster is running before the auto downloaded one
