@@ -59,7 +59,7 @@ def get_manager(name):
         if m.name == name:
             return m
 
-def set_manager(name, extension):
+def set_manager(name):
     global manager
     logger.info('Loading ulauncher-clipboard manager: %s', name)
     manager = get_manager(name)
@@ -73,13 +73,13 @@ def set_manager(name, extension):
 class PreferencesLoadListener(EventListener):
     def on_event(self, event, extension):
         extension.preferences.update(event.preferences)
-        set_manager(event.preferences['manager'], extension)
+        set_manager(event.preferences['manager'])
 
 
 class PreferencesChangeListener(EventListener):
-    def on_event(self, event, extension):
+    def on_event(self, event, _):
         if event.id == 'manager':
-            set_manager(event.new_value, extension)
+            set_manager(event.new_value)
 
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
