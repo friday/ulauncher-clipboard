@@ -1,6 +1,6 @@
 import subprocess
 import json
-from lib import logger, execGet, tryOr, findExec, pidOf
+from lib import execGet, findExec, pidOf
 
 
 name = 'CopyQ'

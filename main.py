@@ -4,7 +4,7 @@ import CopyQ
 import GPaste
 import Clipman
 
-from lib import logger, pidOf, tryInt, ensureStatus, findExec, getThemeIcon, setClipboard, showMessage
+from lib import logger, tryInt, ensureStatus, getThemeIcon, setClipboard, showMessage
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent

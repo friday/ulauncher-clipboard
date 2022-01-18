@@ -1,8 +1,7 @@
 import os
 import subprocess
-import re
 import urllib.request
-from lib import logger, execGet, findExec, pidOf
+from lib import execGet, findExec, pidOf
 
 
 name = 'Clipster'

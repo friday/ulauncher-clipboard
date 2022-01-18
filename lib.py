@@ -2,7 +2,7 @@ import logging
 import subprocess
 import sys
 import gi
-import os
+from distutils.spawn import find_executable as find_exec
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
@@ -10,7 +10,6 @@ gi.require_version('Notify', '0.7')
 
 from gi.repository import Gdk, Gtk, Notify, GObject
 from time import sleep
-from distutils.spawn import find_executable as findExec
 
 
 logger = logging.getLogger('ulauncher-clipboard')

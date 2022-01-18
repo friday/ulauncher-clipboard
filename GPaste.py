@@ -1,6 +1,5 @@
-import os
 import subprocess
-from lib import logger, execGet, findExec, pidOf
+from lib import execGet, findExec, pidOf
 
 
 name = 'GPaste'
