@@ -14,7 +14,7 @@ client = 'clipster'
 
 def can_start():
     # Should always be true considering ^ but still good to test
-    return bool(which(client))
+    return bool(which(client)) and not os.environ.get("WAYLAND_DISPLAY")
 
 def is_running():
     # Check if global clipster is running before the auto downloaded one
@@ -26,8 +26,7 @@ def is_enabled():
     return True
 
 def start():
-    if not is_running():
-        subprocess.Popen([client, '-d'])
+    subprocess.Popen([client, '-d'])
 
 def add(text):
     subprocess.run([client, '-c'], input=text, encoding='utf-8')
