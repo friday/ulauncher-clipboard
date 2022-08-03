@@ -12,8 +12,8 @@ from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAct
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 
 
-clipboard_managers = [CopyQ, GPaste, Clipster, Clipman]
-sorter = lambda m: int("{}{}".format(int(m.is_enabled()), int(m.is_running())))
+clipboard_managers = {m.name: m for m in [CopyQ, GPaste, Clipster, Clipman]}
+sorter = lambda m: (m.can_start(), m.is_enabled(), m.is_running())
 
 def show_status(status):
     return RenderResultListAction([ExtensionResultItem(
@@ -51,12 +51,9 @@ def format_entry(icon, query, entry):
 
 def get_manager(name):
     if name == 'Auto':
-        contenders = [m for m in clipboard_managers if m.can_start()]
-        return sorted(contenders, key=sorter)[-1]
+        return sorted(clipboard_managers.values(), key=sorter)[-1]
 
-    for m in clipboard_managers:
-        if m.name == name:
-            return m
+    return clipboard_managers.get(name)
 
 def set_manager(name):
     global manager

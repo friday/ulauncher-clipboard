@@ -49,9 +49,7 @@ def show_message(title, body, icon, expires=Notify.EXPIRES_NEVER, urgency=2):
     return message
 
 def ensure_status(manager, attempts=0):
-    running = manager.is_running()
-
-    if not running:
+    if not manager.is_running():
         logger.info('Attempting to start manager %s', manager.name)
         if not manager.can_start() or attempts > 30:
             logger.warn('Could not start manager %s (%i attempts)', manager.name, 0)
