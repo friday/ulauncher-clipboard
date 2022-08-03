@@ -1,34 +1,20 @@
 import subprocess
-
 from lib import logger, try_int, ensure_status, set_clipboard, show_message
 from managers import Clipman, Clipster, CopyQ, GPaste
-
-from ulauncher.api.client.Extension import Extension
-from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.shared.event import KeywordQueryEvent, PreferencesEvent, PreferencesUpdateEvent, ItemEnterEvent
-from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
-from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
+from ulauncher.api import Extension, Result
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-
 
 clipboard_managers = {m.name: m for m in [CopyQ, GPaste, Clipster, Clipman]}
 sorter = lambda m: (m.can_start(), m.is_enabled(), m.is_running())
 
-def show_status(status):
-    return RenderResultListAction([ExtensionResultItem(
-        name          = status,
-        icon          = 'edit-paste.png',
-        highlightable = False
-    )])
 
-def format_entry(icon, query, entry):
+def format_entry(input, entry):
     entry_list = entry.strip().split('\n')
     context = []
     pos = 0
 
-    if query:
-        line = next(l for l in entry_list if query in l.lower())
+    if input:
+        line = next(l for l in entry_list if input in l.lower())
         pos = entry_list.index(line)
 
     if pos > 0:
@@ -43,8 +29,8 @@ def format_entry(icon, query, entry):
         if line:
             context.append(line + '...')
 
-    return ExtensionSmallResultItem(
-        icon     = icon,
+    return Result(
+        compact  = True,
         name     = '\n'.join(context),
         on_enter = ExtensionCustomAction(entry)
     )
@@ -62,29 +48,26 @@ def set_manager(name):
     if not ensure_status(manager):
         show_message(
             'ulauncher-clipboard error',
-            "Could not load {}. Make sure it's installed and enabled.".format(manager.name),
+            f"Could not load {manager.name}. Make sure it's installed and enabled.",
             'dialog-error'
         )
 
-class PreferencesLoadListener(EventListener):
-    def on_event(self, event, extension):
-        extension.preferences.update(event.preferences)
-        set_manager(event.preferences['manager'])
 
+class Clipboard(Extension):
+    def __init__(self):
+        super().__init__()
+        set_manager(self.preferences['manager'])
 
-class PreferencesChangeListener(EventListener):
-    def on_event(self, event, _):
-        if event.id == 'manager':
-            set_manager(event.new_value)
+    def on_preferences_update(self, id, value, previous_value):
+        if id == "manager":
+            set_manager(value)
 
-class KeywordQueryEventListener(EventListener):
-    def on_event(self, event, extension):
-        max_lines = try_int(extension.preferences['max_lines'], 20)
-        icon = 'edit-paste.png'
-        query = (event.get_argument() or '').lower()
+    def on_input(self, input_text, trigger_id):
+        max_lines = try_int(self.preferences['max_lines'], 20)
 
         if not ensure_status(manager):
-            return show_status('Could not start {}. Please make sure you have it on your system and that it is not disabled.'.format(manager.name))
+            status = f'Could not start {manager.name}. Please make sure you have it on your system and that it is not disabled.'
+            return [Result(name=status)]
 
         try:
             history = manager.get_history()
@@ -92,37 +75,32 @@ class KeywordQueryEventListener(EventListener):
         except Exception as e:
             logger.error('Failed getting clipboard history')
             logger.error(e)
-            return show_status('Could not load clipboard history')
+            return [Result(name='Could not load clipboard history')]
 
-        # Filter entries if there's a query
-        if query == '':
+        # Filter entries if there's an input_text
+        if input_text == '':
             matches = history[:max_lines]
         else:
             matches = []
             for entry in history:
                 if len(matches) == max_lines:
                     break
-                if query in entry.lower():
+                if input_text in entry.lower():
                     matches.append(entry)
 
         if len(matches) > 0:
             lines = 0
-            results = []
             for entry in matches:
-                result = format_entry(icon, query, entry)
+                result = format_entry(input_text, entry)
                 # Limit to max lines and compensate for the margin
-                lines += max(1, (result.get_name().count('\n') + 1) * 0.85)
+                lines += max(1, (result.name.count('\n') + 1) * 0.85)
                 if max_lines >= lines:
-                    results.append(result)
+                    yield result
 
-            return RenderResultListAction(results)
+        return [Result(name='No matches in clipboard history' if len(input_text) > 0 else 'Clipboard history is empty')]
 
-        return show_status('No matches in clipboard history' if len(query) > 0 else 'Clipboard history is empty')
-
-class ItemEnterEventListener(EventListener):
-    def on_event(self, event, extension):
-        text = event.get_data()
-        copy_hook = extension.preferences['copy_hook']
+    def on_item_enter(self, text):
+        copy_hook = self.preferences['copy_hook']
 
         # Prefer to use the clipboard managers own implementation
         if getattr(manager, 'add', None):
@@ -135,14 +113,6 @@ class ItemEnterEventListener(EventListener):
         if copy_hook:
             logger.info('Running copy hook: ' + copy_hook)
             subprocess.Popen(['sh', '-c', copy_hook])
-
-class Clipboard(Extension):
-    def __init__(self):
-        super(Clipboard, self).__init__()
-        self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
-        self.subscribe(PreferencesEvent, PreferencesLoadListener())
-        self.subscribe(PreferencesUpdateEvent, PreferencesChangeListener())
-        self.subscribe(ItemEnterEvent, ItemEnterEventListener())
 
 if __name__ == '__main__':
     Clipboard().run()
