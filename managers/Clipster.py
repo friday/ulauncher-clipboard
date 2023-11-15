@@ -29,7 +29,7 @@ def start():
     subprocess.Popen([client, '-d'])
 
 def add(text):
-    subprocess.run([client, '-c'], input=text, encoding='utf-8')
+    subprocess.run([client, '-c'], input=text.encode())
 
 def get_history():
     # Clipster uses a json log file. However the default config is to defer/collect writes
