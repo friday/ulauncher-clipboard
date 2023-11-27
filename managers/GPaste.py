@@ -19,7 +19,7 @@ def start():
     subprocess.call([client, 'start'])
 
 def add(text):
-    subprocess.call([client], input=text.encode())
+    subprocess.call([client, 'add', text])
 
 def get_history():
     # The only separator options are zero bytes and line breaks.
