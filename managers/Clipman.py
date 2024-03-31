@@ -25,7 +25,7 @@ def start():
 
 def add(text):
     # manager is based on another clipboard program
-    subprocess.call([copy_agent], input=text.encode())
+    subprocess.run([copy_agent], input=text.encode())
 
 def get_history():
     val=json.loads(exec_get(client, 'show-history'))
