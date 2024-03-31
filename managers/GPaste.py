@@ -16,10 +16,10 @@ def is_enabled():
     return can_start() and exec_get('gsettings', 'get', 'org.gnome.GPaste', 'track-changes') == 'true'
 
 def start():
-    subprocess.call([client, 'start'])
+    subprocess.run([client, 'start'])
 
 def add(text):
-    subprocess.call([client], input=text.encode())
+    subprocess.run([client], input=text.encode())
 
 def get_history():
     # The only separator options are zero bytes and line breaks.
