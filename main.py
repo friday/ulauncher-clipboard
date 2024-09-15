@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 from time import sleep
+from typing import Generator
 
 from ulauncher.api import Extension, Result
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
@@ -19,11 +20,13 @@ clipboard_managers: dict[str, type[ClipboardManager]] = {
 }
 
 
-def ensure_status(manager, attempts=0):
+def ensure_status(manager: type[ClipboardManager], attempts: int = 0) -> bool:
     if not manager.is_running():
         logger.info("Attempting to start manager %s", manager.__name__)
         if not manager.can_start() or attempts > MAX_START_ATTEMPTS:
-            logger.warning("Could not start manager %s (%i attempts)", manager.__name__, 0)
+            logger.warning(
+                "Could not start manager %s (%i attempts)", manager.__name__, 0
+            )
             return False
 
         manager.start()
@@ -33,7 +36,7 @@ def ensure_status(manager, attempts=0):
     is_enabled = manager.is_enabled()
 
     if not is_enabled:
-        logger.warning("Clipboard manager %s is disabled", manager.name)
+        logger.warning("Clipboard manager %s is disabled", manager.__name__)
 
     return is_enabled
 
@@ -76,28 +79,37 @@ def get_manager(name: str) -> type[ClipboardManager] | None:
 
 
 class Clipboard(Extension):
-    manager: type[ClipboardManager]
+    manager: type[ClipboardManager] | None
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.set_manager(self.preferences["manager"])
 
-    def set_manager(self, manager_name):
+    def set_manager(self, manager_name: str) -> None:
         logger.info("Loading ulauncher-clipboard manager: %s", manager_name)
         self.manager = get_manager(manager_name)
-        if not ensure_status(self.manager):
+        if not self.manager or not ensure_status(self.manager):
             show_message(
                 "ulauncher-clipboard error",
                 f"Could not load {manager_name}. Make sure it's installed and enabled.",
                 "dialog-error",
             )
 
-    def on_preferences_update(self, pref_id, value, _previous_value):
+    def on_preferences_update(
+        self, pref_id: str, value: str | int | bool, _previous_value: str | int | bool
+    ) -> None:
         if pref_id == "manager":
-            self.set_manager(value)
+            if isinstance(value, str):
+                self.set_manager(value)
+            self.logger.warning("Invalid manager type: %s (%s)", type(value), value)
 
-    def on_input(self, input_text, _trigger_id):
+    def on_input(
+        self, input_text: str, _trigger_id: str
+    ) -> Generator[Result, None, list[Result]]:
         max_lines = parse_int(self.preferences["max_lines"], 20)
+
+        if not self.manager:
+            return [Result(name="No supported clipboard manager found")]
 
         if not ensure_status(self.manager):
             status = (
@@ -144,11 +156,11 @@ class Clipboard(Extension):
             )
         ]
 
-    def on_item_enter(self, text):
-        copy_hook = self.preferences["copy_hook"]
+    def on_item_enter(self, text: str) -> None:
+        copy_hook: str | None = self.preferences["copy_hook"]
 
         # Prefer to use the clipboard managers own implementation
-        if getattr(self.manager, "add", None):
+        if self.manager and getattr(self.manager, "add", None):
             logger.info("Adding to clipboard using clipboard manager's method")
             self.manager.add(text)
         else:

@@ -12,15 +12,15 @@ client = "copyq"
 
 class CopyQ(ClipboardManager):
     @classmethod
-    def can_start(cls):
+    def can_start(cls) -> bool:
         return bool(which(client))
 
     @classmethod
-    def is_running(cls):
+    def is_running(cls) -> bool:
         return bool(pid_of(client))
 
     @classmethod
-    def is_enabled(cls):
+    def is_enabled(cls) -> bool:
         # activated and configured to sync clipboard
         # The "Auto" option detection logic will disfavor copyq when not running because it will show as disabled
         return (
@@ -41,7 +41,7 @@ class CopyQ(ClipboardManager):
             "};"
             "JSON.stringify(history)"
         )
-        return json.loads(exec_get(client, "eval", script))
+        return json.loads(exec_get(client, "eval", script)) # type: ignore[no-any-return]
 
     @classmethod
     def start(cls) -> None:

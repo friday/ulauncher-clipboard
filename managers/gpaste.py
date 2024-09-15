@@ -11,15 +11,15 @@ client = "gpaste-client"
 
 class GPaste(ClipboardManager):
     @classmethod
-    def can_start(cls):
+    def can_start(cls) -> bool:
         return bool(which(client))
 
     @classmethod
-    def is_running(cls):
+    def is_running(cls) -> bool:
         return bool(pid_of("gpaste-daemon"))
 
     @classmethod
-    def is_enabled(cls):
+    def is_enabled(cls) -> bool:
         return (
             GPaste.can_start()
             and exec_get("gsettings", "get", "org.gnome.GPaste", "track-changes")

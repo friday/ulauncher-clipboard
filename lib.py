@@ -12,7 +12,7 @@ except ValueError:
     gi.require_version("Notify", "0.7")
 
 
-from gi.repository import Gdk, GObject, Gtk, Notify  # type: ignore[attr-defined]  # noqa: E402
+from gi.repository import Gdk, GObject, Gtk, Notify  # noqa: E402
 
 logger = logging.getLogger("ulauncher-clipboard")
 Notify.init("ulauncher-clipboard-extension")
@@ -50,6 +50,6 @@ def set_clipboard(text: str) -> None:
 def show_message(title: str, body: str, icon: str) -> Notify.Notification:
     message = Notify.Notification.new(title, body, icon)
     message.set_timeout(Notify.EXPIRES_NEVER)
-    message.set_urgency(2)
+    message.set_urgency(Notify.Urgency.CRITICAL)
     message.show()
     return message

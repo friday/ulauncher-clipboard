@@ -17,17 +17,17 @@ client = "clipster"
 
 class Clipster(ClipboardManager):
     @classmethod
-    def can_start(cls):
+    def can_start(cls) -> bool:
         # which(client) should always be true considering, but still good to test
         return bool(which(client)) and not os.environ.get("WAYLAND_DISPLAY")
 
     @classmethod
-    def is_running(cls):
+    def is_running(cls) -> bool:
         # Check if global clipster is running before the auto downloaded one
         return bool(pid_of("clipster") or pid_of("clipster_bin"))
 
     @classmethod
-    def is_enabled(cls):
+    def is_enabled(cls) -> bool:
         # We can't really know this. Users can configure clipster.ini not to sync the clipboard
         # This can't be easily tested though. The conf dir can vary
         return True

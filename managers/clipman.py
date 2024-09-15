@@ -15,15 +15,15 @@ copy_agent = "wl-copy"
 
 class Clipman(ClipboardManager):
     @classmethod
-    def can_start(cls):
+    def can_start(cls) -> bool:
         return bool(which(client)) and bool(os.environ.get("WAYLAND_DISPLAY"))
 
     @classmethod
-    def is_running(cls):
+    def is_running(cls) -> bool:
         return bool(pid_of(paste_agent))
 
     @classmethod
-    def is_enabled(cls):
+    def is_enabled(cls) -> bool:
         # Clipman has no "state" where it's running but not recording your clipboard history.
         return True
 
