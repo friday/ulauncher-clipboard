@@ -1,5 +1,14 @@
+[project]
+name = "ulauncher-clipboard"
+description = "Ulauncher extension for managing your clipboard history"
+readme = "README.md"
+license = {text = "GPL-3"}
+authors = [{name = "Albin Larsson"}]
+urls.Repository = "https://github.com/friday/ulauncher-clipboard.git"
+urls.Issues = "https://github.com/friday/ulauncher-clipboard/issues"
+
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 check_untyped_defs = true
 disallow_incomplete_defs = true
 disable_error_code = "import-untyped"
