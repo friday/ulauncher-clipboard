@@ -30,12 +30,13 @@ def parse_int(string: str, fallback: int = 0) -> int:
         return fallback
 
 
-def pid_of(name: str) -> int | None:
+def pid_of(name: str) -> list[int]:
     # Get the first pid (there may be many space-separated pids), and parse to int
     try:
-        return int(exec_get("pidof", "-x", name))
+        pids = exec_get("pidof", "-x", name).split()
+        return [int(pid) for pid in pids]
     except subprocess.CalledProcessError:
-        return None
+        return []
 
 
 def set_clipboard(text: str) -> None:
