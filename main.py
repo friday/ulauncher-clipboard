@@ -45,13 +45,13 @@ def sorter(m: type[ClipboardManager]) -> tuple[bool, bool, bool]:
     return m.can_start(), m.is_enabled(), m.is_running()
 
 
-def format_entry(text_input: str, entry: str) -> Result:
+def format_entry(text_query: str, entry: str) -> Result:
     entry_list = entry.strip().split("\n")
     context = []
     pos = 0
 
-    if text_input:
-        line = next(line for line in entry_list if text_input in line.lower())
+    if text_query:
+        line = next(line for line in entry_list if text_query in line.lower())
         pos = entry_list.index(line)
 
     if pos > 0:
@@ -104,7 +104,7 @@ class Clipboard(Extension):
             self.logger.warning("Invalid manager type: %s (%s)", type(value), value)
 
     def on_input(
-        self, input_text: str, _trigger_id: str
+        self, input_query: str, _trigger_id: str
     ) -> Generator[Result, None, list[Result]]:
         max_lines = parse_int(self.preferences["max_lines"], 20)
 
@@ -126,21 +126,21 @@ class Clipboard(Extension):
             logger.error(e)
             return [Result(name="Could not load clipboard history")]
 
-        # Filter entries if there's an input_text
-        if input_text == "":
+        # Filter entries if there's an input_query
+        if input_query == "":
             matches = history[:max_lines]
         else:
             matches = []
             for entry in history:
                 if len(matches) == max_lines:
                     break
-                if input_text in entry.lower():
+                if input_query.lower() in entry.lower():
                     matches.append(entry)
 
         if len(matches) > 0:
             lines = 0
             for entry in matches:
-                result = format_entry(input_text, entry)
+                result = format_entry(input_query.lower(), entry)
                 # Limit to max lines and compensate for the margin
                 lines += max(1, (result.name.count("\n") + 1) * 0.85)
                 if max_lines >= lines:
@@ -150,7 +150,7 @@ class Clipboard(Extension):
             Result(
                 name=(
                     "No matches in clipboard history"
-                    if len(input_text) > 0
+                    if len(input_query) > 0
                     else "Clipboard history is empty"
                 )
             )
