@@ -13,13 +13,14 @@ binUrl = "https://raw.githubusercontent.com/mrichar1/clipster/master/clipster"
 # The delimiter needs to be long and complicated to avoid being something you copied
 delim = "a8;bpy]rAM6XFOgT#:m9C{3Qj4WFLxAE@{?FL_Os_]e,b]i=ah;+0[vG,;yurpHW>j?oAImf3,<RlrEUA,uqYPVm^ti(+/)!cNAg"
 client = "clipster"
+is_x11 = os.environ.get("XDG_SESSION_TYPE") == "x11"
 
 
 class Clipster(ClipboardManager):
     @classmethod
     def can_start(cls) -> bool:
         # which(client) should always be true considering, but still good to test
-        return bool(which(client)) and not os.environ.get("WAYLAND_DISPLAY")
+        return is_x11 and bool(which(client))
 
     @classmethod
     def is_running(cls) -> bool:
@@ -36,6 +37,10 @@ class Clipster(ClipboardManager):
     def get_history(cls) -> list[str]:
         # Clipster uses a json log file. However the default config is to defer/collect writes
         # so we have to call the client to get the latest
+        if not is_x11:
+            raise RuntimeError("Clipster only works on X11")
+        if not cls.can_start():
+            raise RuntimeError("Clipster client not found")
         return exec_get(
             client, "--output", "--clipboard", "--number", "0", "--delim", delim
         ).split(delim)
