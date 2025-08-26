@@ -101,7 +101,8 @@ class Clipboard(Extension):
         if pref_id == "manager":
             if isinstance(value, str):
                 self.set_manager(value)
-            self.logger.warning("Invalid manager type: %s (%s)", type(value), value)
+            else:
+                self.logger.warning("Invalid manager type: %s (%s)", type(value), value)
 
     def on_input(
         self, input_query: str, _trigger_id: str
