@@ -5,7 +5,7 @@ import subprocess
 import urllib.request
 from shutil import which
 
-from lib import exec_get, pid_of
+from lib import exec_get, logger, pid_of
 from managers.manager_base import ClipboardManager
 
 # URL to download clipster if it's not installed
@@ -57,6 +57,9 @@ if not Clipster.can_start():
     client = f"{extDir}/clipster_bin"
     # Try finding local binary
     if not which(client):
-        # Download and prepare binary
-        urllib.request.urlretrieve(binUrl, client)
-        os.chmod(client, 0o755)
+        try:
+            # Download and prepare binary
+            urllib.request.urlretrieve(binUrl, client)
+            os.chmod(client, 0o755)
+        except:  # noqa: E722
+            logger.warning("Could not download clipster. Check your internet connection.")
