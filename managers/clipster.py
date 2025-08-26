@@ -16,6 +16,25 @@ client = "clipster"
 is_x11 = os.environ.get("XDG_SESSION_TYPE") == "x11"
 
 
+def download_clipster() -> str | None:
+    # Get the path to the extension
+    extDir = os.path.dirname(os.path.realpath(__file__))
+    # The name of the local binary must not be "clipster" to avoid an issue when down/upgrading between ulauncher v4/v5
+    dest_path = f"{extDir}/clipster_bin"
+    # Try finding local binary
+    if not which(dest_path):
+        try:
+            # Download and prepare binary
+            urllib.request.urlretrieve(binUrl, dest_path)
+            os.chmod(dest_path, 0o755)
+            global client  # noqa: PLW0603
+            client = dest_path
+        except:  # noqa: E722
+            logger.warning("Could not download clipster. Check your internet connection.")
+
+    return dest_path if which(dest_path) else None
+
+
 class Clipster(ClipboardManager):
     @classmethod
     def can_start(cls) -> bool:
@@ -39,8 +58,8 @@ class Clipster(ClipboardManager):
         # so we have to call the client to get the latest
         if not is_x11:
             raise RuntimeError("Clipster only works on X11")
-        if not cls.can_start():
-            raise RuntimeError("Clipster client not found")
+        if not bool(which(client)) and not download_clipster():
+            raise RuntimeError("Clipster client not found. ")
         return exec_get(
             client, "--output", "--clipboard", "--number", "0", "--delim", delim
         ).split(delim)
@@ -55,16 +74,5 @@ class Clipster(ClipboardManager):
 
 
 # Try finding global clipster binary
-if not Clipster.can_start():
-    # Get the path to the extension
-    extDir = os.path.dirname(os.path.realpath(__file__))
-    # The name of the local binary must not be "clipster" to avoid an issue when down/upgrading between ulauncher v4/v5
-    client = f"{extDir}/clipster_bin"
-    # Try finding local binary
-    if not which(client):
-        try:
-            # Download and prepare binary
-            urllib.request.urlretrieve(binUrl, client)
-            os.chmod(client, 0o755)
-        except:  # noqa: E722
-            logger.warning("Could not download clipster. Check your internet connection.")
+if not bool(which(client)) and not download_clipster():
+    logger.warning("Could not download clipster. Check your internet connection.")
